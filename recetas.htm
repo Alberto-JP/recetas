@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ejercicio recetas</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        section p, section ul {
+            background-color: rgba(240, 248, 255, 0.874);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="text-center">Recetas</h1>
+    </header>
+    <main>
+        <div class="w-50 bg-info m-auto p-3">
+            <input type="button" name="obtener" id="obtener" value="Obtener recetas" class="btn btn-success mt-3 d-block m-auto">
+			<input type="button" name="borrar" id="borrar" value="Borrar recetas" class="btn btn-success mt-3 d-block m-auto">
+        </div>
+        <div id="recetas" class="justify-content-center d-flex flex-wrap gap-3">
+            <!--   Crear con JavaScript todo esto, cambiando los datos por los correspondientes
+            <section class="rounded-3 bg-warning p-3 my-3 border-1 border-black" style="background-image: url(https://cdn.dummyjson.com/recipe-images/1.webp); background-size: cover;">
+                <h2 class="alert alert-warning">Classic Margherita Pizza</h2>
+                <p class="fw-bold h5 p-2">Ingredientes</p>
+                <ul>
+                    <li>Pizza dough</li>
+                    <li>Tomato sauce</li>
+                    <li>Fresh mozzarella cheese</li>
+                    <li>Fresh basil leaves</li>
+                    <li>Olive oil</li>
+                    <li>Salt and pepper to taste</li>
+                </ul>
+                <p class="fw-bold h5 p-2">Instrucciones</p>
+                <ul>
+                    <li>Preheat the oven to 475°F (245°C)</li>
+                    <li>Roll out the pizza dough and spread tomato sauce evenly.</li>
+                    <li>Top with slices of fresh mozzarella and fresh basil leaves.</li>
+                    <li>Drizzle with olive oil and season with salt and pepper.</li>
+                    <li>Bake in the preheated oven for 12-15 minutes or until the crust is golden brown.</li>
+                    <li>Slice and serve hot.</li>
+                </ul>                
+            </section>
+            -->
+        </div> 
+		<script>
+			const container = document.getElementById("recetas");
+			const b = document.getElementById("obtener");
+			const c = document.getElementById("borrar");
+
+			// disable it
+			b.disabled = true;
+		
+		
+			function checkReply(reply) {
+				if(reply.ok) {
+					// enable button
+					b.disabled = false;
+					return reply.json();
+				} else {
+					throw new Error("Error in reply:" + reply.status);
+				}
+			}
+		
+			function onError(error) {
+				alert(error);
+			}
+		
+			function parseData(data) {
+
+				console.log(data);
+				
+				data.recipes.forEach( (r, i) => {
+				
+					createRecipe(r, i);
+				
+				});
+
+			}
+			
+			
+			function createRecipe(ob, index) {
+			
+				console.log("Creando receta: "+ob.name);
+				// crear objeto
+				const recipe = document.createElement("section");
+				const h2 = document.createElement("h2");
+				const p1 = document.createElement("p"), p2 = document.createElement("p");
+				const ul1 = document.createElement("ul"), ul2 = document.createElement("ul");
+				//let listed = document.createElement("li");
+				// set container classes
+				recipe.id = index;
+				recipe.classList = "rounded-3","bg-warning","p-3","my-3","border-1","border-black";
+				recipe.style.backgroundImage = "url('1.webp')";
+				recipe.style.backgroundSize = "cover";
+				// set header
+				h2.classList = "alert","alert-warning";
+				h2.textContent = ob.name;
+				// set ingredients & instructions
+				p1.classList, p2.classList = "fw-bold","h5","p-2";
+				p1.textContent = "Ingredientes";
+				p2.textContent = "Instrucciones";
+				
+				
+				// agregar hijos
+				recipe.appendChild(h2);
+					recipe.appendChild(p1);
+					recipe.appendChild(ul1);
+						// populate the unsorted lists for ingredients and instructions
+						ob.ingredients.forEach ( e => {
+							//empty element
+							let listed = document.createElement("li");
+							//set its content
+							listed.innerHTML = e;
+							//add it to parent (ul1)
+							ul1.appendChild(listed);
+						});
+						
+					recipe.appendChild(p2);
+					recipe.appendChild(ul2);
+						// populate the unsorted lists for ingredients and instructions
+						ob.instructions.forEach ( e => {
+							//empty element
+							let listed = document.createElement("li");
+							//set its content
+							listed.innerHTML = e;
+							//add it to parent (ul2)
+							ul2.appendChild(listed);
+						
+						});				
+				
+				// agregar al contenedor general
+				container.appendChild(recipe);
+			}
+			
+			
+			
+
+			function query() {
+				//disable button when fetching
+				b.disabled = true;
+				fetch("https://dummyjson.com/recipes?delay=1000")
+				.then(checkReply)
+				.then(parseData)
+				.catch(onError);
+			}
+			
+			function clearRecipesFromElement() {
+				while (container.firstChild) {
+					container.removeChild(container.lastChild);
+				}
+			}
+			
+			query();
+			
+			b.addEventListener("click", query);
+			c.addEventListener("click", clearRecipesFromElement);
+		</script>
+    </main>
+</body>
+</html>
+
+
